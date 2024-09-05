@@ -55,15 +55,13 @@ class Habit(models.Model):
     )
     periodicity = models.PositiveSmallIntegerField(
         default=1,
-        verbose_name="периодичность в днях",
+        verbose_name="периодичность в днях",################## убрать blank=True, null=True,
         blank=True,
         null=True,
     )
-    duration = models.CharField(
-        max_length=50,
-        default=timedelta(minutes=2),
+    duration = models.DurationField(
+        default=60,
         verbose_name="время требующееся на выполнение действия",
-        blank=True,
     )
     is_public = models.BooleanField(
         default=False,

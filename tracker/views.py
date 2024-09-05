@@ -3,6 +3,7 @@ from django.shortcuts import render
 from rest_framework.generics import (CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView)
 
 from tracker.models import Habit
+from tracker.paginators import CustomPagination
 from tracker.serializers import HabitSerializer
 
 
@@ -16,6 +17,7 @@ class HabitCreateApiView(CreateAPIView):   #Создание привычки.
 class HabitListApiView(ListAPIView):   #Список привычек текущего пользователя с пагинацией.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user)
@@ -23,6 +25,7 @@ class HabitListApiView(ListAPIView):   #Список привычек текущ
 class PublicHabitListApiView(ListAPIView):   #Список публичных привычек.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    # pagination_class = CustomPagination
 
     def get_queryset(self):
         return self.queryset.filter(is_public=True)
