@@ -1,15 +1,18 @@
 from django.shortcuts import render
 
 from rest_framework.generics import (CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView)
+from rest_framework.permissions import IsAuthenticated
 
 from tracker.models import Habit
 from tracker.paginators import CustomPagination
+from tracker.permissions import IsOwner
 from tracker.serializers import HabitSerializer
 
 
 class HabitCreateApiView(CreateAPIView):   #Создание привычки.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    permission_classes = (IsAuthenticated)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -33,11 +36,14 @@ class PublicHabitListApiView(ListAPIView):   #Список публичных п
 class HabitRetrieveApiView(RetrieveAPIView):   #детальный просмотр привычки
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    permission_classes = (IsAuthenticated, IsOwner)
 
 class HabitUpdateApiView(UpdateAPIView):   #Редактирование привычки.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    permission_classes = (IsAuthenticated, IsOwner)
 
 class HabitDestroyApiView(DestroyAPIView):   #Удаление привычки.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
+    permission_classes = (IsAuthenticated, IsOwner)
