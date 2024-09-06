@@ -12,7 +12,7 @@ from tracker.serializers import HabitSerializer
 class HabitCreateApiView(CreateAPIView):   #Создание привычки.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
