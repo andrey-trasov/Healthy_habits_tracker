@@ -1,8 +1,14 @@
 from django.urls import path
 
 from tracker.apps import TrackerConfig
-from tracker.views import HabitCreateApiView, HabitListApiView, PublicHabitListApiView, HabitRetrieveApiView, \
-    HabitUpdateApiView, HabitDestroyApiView
+from tracker.views import (
+    HabitCreateApiView,
+    HabitListApiView,
+    PublicHabitListApiView,
+    HabitRetrieveApiView,
+    HabitUpdateApiView,
+    HabitDestroyApiView,
+)
 
 app_name = TrackerConfig.name
 

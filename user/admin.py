@@ -1,3 +1,15 @@
 from django.contrib import admin
 
-# Register your models here.
+from user.models import User
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = (
+        "email",
+        "phone_number",
+        "avatar",
+        "token",
+        "city",
+        "telegram_chat_id",
+    )

@@ -1,10 +1,13 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-buctfza0*h)(_om$chhj@-w4dx@9$gr^nj#!3^+heh((72lay5"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
@@ -18,14 +21,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "rest_framework",
     "rest_framework_simplejwt",
-    'drf_yasg',
-    'corsheaders',
+    "drf_yasg",
+    "corsheaders",
+    "django_celery_beat",
     "tracker",
     "user",
-
 ]
 
 MIDDLEWARE = [
@@ -36,10 +38,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
-ROOT_URLCONF = "myprogect.urls"
+ROOT_URLCONF = "myproject.urls"
 
 TEMPLATES = [
     {
@@ -57,28 +59,17 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "myprogect.wsgi.application"
-
-# DATABASES = {
-#    "default": {
-#        "ENGINE": "django.db.backends.postgresql_psycopg2", # тут не меняем
-#        'NAME': os.getenv('NAME'),
-#        'USER':  os.getenv('USER'),
-#        'PASSWORD': os.getenv('PASSWORD'),
-#        'HOST': os.getenv('HOST'),
-#        'PORT': os.getenv('PORT')
-#    }
-# }
+WSGI_APPLICATION = "myproject.wsgi.application"
 
 DATABASES = {
-   "default": {
-       "ENGINE": "django.db.backends.postgresql_psycopg2", # тут не меняем
-       'NAME': "tracker",
-       'USER':  "postgres",
-       'PASSWORD': "12345",
-       'HOST': "127.0.0.1",
-       'PORT': 5432
-   }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",  # тут не меняем
+        "NAME": os.getenv("NAME"),
+        "USER": os.getenv("USER"),
+        "PASSWORD": os.getenv("PASSWORD"),
+        "HOST": os.getenv("HOST"),
+        "PORT": os.getenv("PORT"),
+    }
 }
 
 
@@ -100,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 
@@ -112,24 +103,27 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = "user.User"
 
 REST_FRAMEWORK = {
-    # "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated",],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
 }
 
 SIMPLE_JWT = {
-   'ACCESS_TOKEN_LIFETIME': timedelta(minutes=500),   # вернуть на 5 минут
-   'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=500),  # вернуть на 5 минут
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 CORS_ALLOWED_ORIGINS = [
     "https://read-only.example.com",
@@ -141,10 +135,12 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://localhost:6379' # Например, Redis, который по умолчанию работает на порту 6379
+CELERY_BROKER_URL = os.getenv(
+    "CELERY_BROKER_URL"
+)  # Например, Redis, который по умолчанию работает на порту 6379
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Australia/Tasmania"
@@ -153,4 +149,13 @@ CELERY_TIMEZONE = "Australia/Tasmania"
 CELERY_TASK_TRACK_STARTED = True
 
 # Максимальное время на выполнение задачи
-CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_TASK_TIME_LIMIT = os.getenv("CELERY_TASK_TIME_LIMIT")
+
+CELERY_BEAT_SCHEDULE = {
+    "sending_notifications": {  # название функции из task
+        "task": "tracker.tasks.sending_notifications",  # Путь к задаче
+        "schedule": timedelta(seconds=5),  # Расписание выполнения задачи
+    },
+}
+
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")

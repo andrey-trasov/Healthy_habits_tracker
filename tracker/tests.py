@@ -14,16 +14,16 @@ class HabitTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create(email="foxship@yandex.ru")
         self.habit = Habit.objects.create(
-            name = "шоколадка",
-            place = "Дома",
-            action = "ем 2 шоколадки",
-            first_time_to_do = "2024-08-18T13:01:13.605876Z",
-            is_pleasant = "True",
-            periodicity = 1,
-            duration = "00:02:00",
-            is_public = "True",
-            is_active = "True",
-            owner = self.user,
+            name="шоколадка",
+            place="Дома",
+            action="ем 2 шоколадки",
+            first_time_to_do="2024-08-18T13:01:13.605876Z",
+            is_pleasant="True",
+            periodicity=1,
+            duration="00:02:00",
+            is_public="True",
+            is_active="True",
+            owner=self.user,
         )
         self.client.force_authenticate(user=self.user)
 
@@ -33,7 +33,7 @@ class HabitTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_habit_create(self):
-        url = reverse('tracker:habit_create')
+        url = reverse("tracker:habit_create")
         data = {
             "name": "Отжимания",
             "place": "Дома",
@@ -45,7 +45,7 @@ class HabitTestCase(APITestCase):
             "is_public": "True",
             "is_active": "True",
             "owner": self.user.pk,
-            "relation_habit": 1
+            "relation_habit": 1,
         }
 
         # data = {

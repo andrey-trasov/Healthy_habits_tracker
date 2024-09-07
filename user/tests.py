@@ -9,11 +9,8 @@ class UsersTestCase(APITestCase):
     """Тестирование CRUD пользователей."""
 
     def setUp(self):
-        self.user = User.objects.create(
-            email="foxship@yandex.ru"
-        )
+        self.user = User.objects.create(email="foxship@yandex.ru")
         self.client.force_authenticate(user=self.user)
-
 
     def test_user_create(self):
         url = reverse("user:register")
@@ -25,4 +22,3 @@ class UsersTestCase(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.all().count(), 2)
-

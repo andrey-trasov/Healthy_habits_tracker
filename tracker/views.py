@@ -1,6 +1,12 @@
-from tracker.tasks import updating_course
+import datetime
 
-from rest_framework.generics import (CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView)
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+    DestroyAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 
 from tracker.models import Habit
@@ -9,16 +15,22 @@ from tracker.permissions import IsOwner
 from tracker.serializers import HabitSerializer
 
 
-class HabitCreateApiView(CreateAPIView):   #Создание привычки.
+class HabitCreateApiView(CreateAPIView):  # Создание привычки.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-        updating_course.delay()
+        habit = serializer.save(owner=self.request.user)
+        habit.next_time_to_do = habit.first_time_to_do + datetime.timedelta(
+            days=habit.periodicity
+        )
+        habit.save()
 
-class HabitListApiView(ListAPIView):   #Список привычек текущего пользователя с пагинацией.
+
+class HabitListApiView(
+    ListAPIView
+):  # Список привычек текущего пользователя с пагинацией.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     pagination_class = CustomPagination
@@ -26,7 +38,8 @@ class HabitListApiView(ListAPIView):   #Список привычек текущ
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user)
 
-class PublicHabitListApiView(ListAPIView):   #Список публичных привычек.
+
+class PublicHabitListApiView(ListAPIView):  # Список публичных привычек.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     # pagination_class = CustomPagination
@@ -34,17 +47,20 @@ class PublicHabitListApiView(ListAPIView):   #Список публичных п
     def get_queryset(self):
         return self.queryset.filter(is_public=True)
 
-class HabitRetrieveApiView(RetrieveAPIView):   #детальный просмотр привычки
+
+class HabitRetrieveApiView(RetrieveAPIView):  # детальный просмотр привычки
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = (IsAuthenticated, IsOwner)
 
-class HabitUpdateApiView(UpdateAPIView):   #Редактирование привычки.
+
+class HabitUpdateApiView(UpdateAPIView):  # Редактирование привычки.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = (IsAuthenticated, IsOwner)
 
-class HabitDestroyApiView(DestroyAPIView):   #Удаление привычки.
+
+class HabitDestroyApiView(DestroyAPIView):  # Удаление привычки.
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
     permission_classes = (IsAuthenticated, IsOwner)
