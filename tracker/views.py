@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from tracker.tasks import updating_course
 
 from rest_framework.generics import (CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView)
 from rest_framework.permissions import IsAuthenticated
@@ -16,6 +16,7 @@ class HabitCreateApiView(CreateAPIView):   #Создание привычки.
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+        updating_course.delay()
 
 class HabitListApiView(ListAPIView):   #Список привычек текущего пользователя с пагинацией.
     queryset = Habit.objects.all()
