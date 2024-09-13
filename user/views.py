@@ -20,3 +20,12 @@ class UserCreateAPIView(CreateAPIView):
         user = serializer.save(is_active=True)  # сохраняяем пользователя активным
         user.set_password(user.password)  # хэшируем пароль
         user.save()
+
+# Правда чтобы не делать два запроса в базу данных (происходит на каждый save), можно было сделать так:
+#
+# def perform_create(self, serializer):
+#     user = serializer.save(commit=False)
+#     user.set_password(user.password)
+#     user.save()
+#
+# Причем статус активности ставить не нужно - пользователь дефолтно создается активным
