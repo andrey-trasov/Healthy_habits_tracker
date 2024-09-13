@@ -40,7 +40,7 @@ services:
   celery:
     build: .
     tty: true
-    command: celery -A myproject worker -l INFO
+    command: python -m celery -A myproject worker -l info
     restart: on-failure
     depends_on:
       - redis
@@ -54,7 +54,7 @@ services:
   celery-beat:
     build: .
     tty: true
-    command: celery -A myproject beat -l INFO
+    command: python -m celery -A myproject beat -l info
     restart: on-failure
     depends_on:
       - redis
@@ -68,9 +68,3 @@ services:
 
 volumes:
   pg_data:
-
-
-
-
-
-
