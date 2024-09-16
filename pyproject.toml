@@ -19,6 +19,7 @@ redis = "^5.0.8"
 django-celery-beat = "^2.7.0"
 python-dotenv = "^1.0.1"
 black = "^24.8.0"
+setuptools = "^75.0.0"
 
 
 [build-system]

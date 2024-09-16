@@ -1,11 +1,10 @@
 FROM python:3.12
 
-RUN pip install poetry
-
 WORKDIR /app
 
-COPY poetry.lock pyproject.toml  ./
-
-RUN poetry install
-
+COPY poetry.lock pyproject.toml ./
+RUN pip install --upgrade pip
+RUN pip install poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install --no-root
 COPY . .
